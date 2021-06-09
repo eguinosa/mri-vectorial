@@ -7,6 +7,21 @@ from nltk.corpus import stopwords, wordnet
 from nltk.stem import WordNetLemmatizer
 
 
+def document_tokenizing(document):
+    """
+    Realiza la tokenizacion de toda la informacion relevante de un documento.
+    :param document: Un diccionario que contiene la informacion de un
+    documento, su id, titulo, autor, texto, etc...
+    :return: Una lista conteniendo los tokens relevantes del documento.
+    """
+    document_tokens = []
+    for key, value in document.items():
+        new_tokens = tokenize(value)
+        document_tokens += new_tokens
+
+    return document_tokens
+
+
 def tokenize(text):
     """
     Realiza la tokenizacion de un texto (string).

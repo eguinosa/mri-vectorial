@@ -2,7 +2,7 @@
 # C-511
 
 from nltk.probability import FreqDist
-from tokenizer import tokenize
+from tokenizer import document_tokenizing
 
 
 class Document:
@@ -21,8 +21,7 @@ class Document:
         self.id = document['id']
 
         # Realiza la tokenizacion de la informacion del documento
-        self.tokens = []
-        self.__document_tokenizing(document)
+        self.tokens = document_tokenizing(document)
 
         # Guarda los terminos del documento en un 'set', para facilitar la
         # busqueda y verificacion de los tokens que estan en el documento.
@@ -32,41 +31,30 @@ class Document:
         # la frequencia maxima
         freq_dist = FreqDist(self.tokens)
         self.max_freq = freq_dist[freq_dist.max()]
-        # Crea un diccionario para guardar la frecuencia
-        # normalizada de los terminos.
-        self.norm_freq = {}
-        self.__save_frequencies(freq_dist)
+        # Calcula la frecuencia normalizada de los terminos.
+        self.norm_freq = self.__calc_norm_frequencies(freq_dist)
 
         # Crear diccionario para guardar los pesos de los terminos en el
-        # documento.
+        # documento cuando el corpus llame al metodo 'calc_weight_vector'
         self.weight_vector = {}
 
-    def __document_tokenizing(self, document):
+    def __calc_norm_frequencies(self, freq_dist):
         """
-        Realiza la tokenizacion de toda la informacion relevante, excepto el
-        'id' del documento.
-        Todos los tokens creados son guardados en la lista 'self.tokens'.
-        :param document: El diccionario que contiene toda la informacion
-        relacionada con el documento.
-        """
-        for key, value in document.items():
-            if key == 'id':
-                continue
-            new_tokens = tokenize(value)
-            self.tokens += new_tokens
-
-    def __save_frequencies(self, freq_dist):
-        """
-        Guarda las frequencias y las frequencias normalizadas de los terminos
-        del documento en sus respectivos diccionarios.
+        Calcula las frequencias normalizadas de los terminos
+        del documento y las guarda en un diccionario.
         :param freq_dist: Una 'FreqDist' del Modulo 'Natural Language Toolkit'
         creado con los tokens del documento.
+        :return: Un diccionario que contiene las frecuencias normalizadas para
+        todos los terminos del documento.
         """
+        norm_frequencies = {}
         for term in self.terms:
             # La frecuencia del termino en el documento dividida por la
             # frecuencia maxima.
             value = freq_dist[term] / self.max_freq
-            self.norm_freq[term] = value
+            norm_frequencies[term] = value
+
+        return norm_frequencies
 
     def calc_weight_vector(self, idf_frequencies):
         """
