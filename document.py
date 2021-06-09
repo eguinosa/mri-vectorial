@@ -15,9 +15,8 @@ class Document:
     def __init__(self, document):
         """
         Inicializa los datos del documento.
-        :param document:
-            Un diccionario conteniendo el id del documento, el autor, el texto y
-            otras informaciones relevantes.
+        :param document: Un diccionario conteniendo el id del documento, el
+        autor, el texto y otras informaciones relevantes.
         """
         self.id = document['id']
 
@@ -33,20 +32,22 @@ class Document:
         # la frequencia maxima
         freq_dist = FreqDist(self.tokens)
         self.max_freq = freq_dist[freq_dist.max()]
-        # Crea un diccionario para guardar la frecuencia y la frecuencia
+        # Crea un diccionario para guardar la frecuencia
         # normalizada de los terminos.
-        self.term_freq = {}
         self.norm_freq = {}
         self.__save_frequencies(freq_dist)
+
+        # Crear diccionario para guardar los pesos de los terminos en el
+        # documento.
+        self.weight_vector = {}
 
     def __document_tokenizing(self, document):
         """
         Realiza la tokenizacion de toda la informacion relevante, excepto el
         'id' del documento.
         Todos los tokens creados son guardados en la lista 'self.tokens'.
-        :param document:
-            El diccionario que contiene toda la informacion relacionada con el
-            documento.
+        :param document: El diccionario que contiene toda la informacion
+        relacionada con el documento.
         """
         for key, value in document.items():
             if key == 'id':
@@ -58,10 +59,24 @@ class Document:
         """
         Guarda las frequencias y las frequencias normalizadas de los terminos
         del documento en sus respectivos diccionarios.
-        :param freq_dist:
-            Una 'FreqDist' del Modulo 'Natural Language Toolkit' creado con los
-            tokens del documento.
+        :param freq_dist: Una 'FreqDist' del Modulo 'Natural Language Toolkit'
+        creado con los tokens del documento.
         """
         for term in self.terms:
-            self.term_freq[term] = freq_dist[term]
-            self.norm_freq[term] = freq_dist[term] / self.max_freq
+            # La frecuencia del termino en el documento dividida por la
+            # frecuencia maxima.
+            value = freq_dist[term] / self.max_freq
+            self.norm_freq[term] = value
+
+    def calc_weight_vector(self, idf_frequencies):
+        """
+        Calcula el peso de los terminos en el documento.
+        :param idf_frequencies: Recibe las frecuencias de ocurrencia de los
+        terminos dentro de los documentos del corpus.
+        """
+        for term, idf_freq in idf_frequencies.items():
+            # La frecuencia normalizada del termino.
+            tf_freq = self.norm_freq[term]
+            # Calculando el peso del termino 'term'.
+            value = tf_freq * idf_freq
+            self.weight_vector[term] = value
