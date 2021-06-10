@@ -3274,7 +3274,9 @@
   "abstract": "some notes for the small disturbance linear theory of the method of local linearisation of the flow over an airfoil at mach number of unity . in this paper, the pressure distribution at the surface of a symmetrical non-lifting aerofoil with free stream mach number of unity has been investigated by means of the small-disturbance linear theory or the method of local linearization .  and by comparing with the calculated results based on an hodograph method, the accuracy of these approximate methods has been evaluated .  moreover, when these approximate methods are used for the calculation of the pressure coefficient, some notes necessary to obtain more correct results have been discussed ."
  },
  "471": {
-  "id": "471"
+  "id": "471",
+  "title": "",
+  "abstract":""
  },
  "472": {
   "id": "472",
@@ -6915,7 +6917,9 @@
   "abstract": "investigation of a retrocket exhausting from the nose of a blunt body into a supersonic free stream . the pressure distribution and pressure drag of a blunt body with a supersonic jet issuing upstream from its center were determined at free-stream mach numbers of 1.60, 2.00, and 2.85 . the thrust of the jet issuing from the model nose was varied to study its effects on flow around the model and to determine variation of pressure distribution and pressure drag of the model with the thrust . at all mach numbers investigated, the pressure drag decreased with increasing retrorocket thrust until a minimum value was reached . further increases in retrorocket thrust resulted in increases in the pressure drag . the resultant drag /pressure drag plus retrorocket thrust but excluding base and skin-friction drag/ of the model was reduced by retrorocket operation below the drag for a jet-off condition, except at very low retrorocket thrust coefficients . the flow about the nose of the blunt body was very unstable throughout the range of mach numbers and retrorocket thrust coefficients investigated ."
  },
  "995": {
-  "id": "995"
+  "id": "995",
+  "title": "",
+  "abstract":""
  },
  "996": {
   "id": "996",
