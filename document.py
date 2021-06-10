@@ -19,10 +19,11 @@ class Document:
         autor, el texto y otras informaciones relevantes.
         """
 
-        # Saving Original information
+        # Guarda la informacion original del documento
         self.id = document['id']
         self.title = document['title']
-        self.author = document['author']
+        # En caso de que el documento  no especifique el autor
+        self.author = document.get('author', 'Anonymous')
         self.original_document = document
 
         # Realiza la tokenizacion de la informacion del documento
