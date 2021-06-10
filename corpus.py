@@ -51,7 +51,7 @@ class Corpus:
 
         frequencies = {}
         # Iterando por los documentos del corpus
-        for document in self.documents:
+        for document in self.documents.values():
             # Iterando por los terminos del documento
             for term in document.terms:
                 # Se ha encontrado el termino en al menos un documento.
@@ -81,20 +81,22 @@ class Corpus:
 
         return idf_frequencies
 
-    def process_query(self, text, number=10):
+    def query_process(self, text, number=10):
         """
-        Procesa un query, y devuelve los 10 articulos mas relevantes.
+        Procesa un query, y devuelve los 10 articulos (o 'number') mas
+        relevantes.
         :param text: El texto del query.
+        :param number: El numero de documentos que se quiere recuperar
         :return: Devuelve una lista conteniendo los 10 (or number) documentos
         mas relevantes con respecto al texto del query.
         """
 
         # Creando una instancia de query con el texto
-        new_query = Query(text)
-        
+        new_query = Query(text, self.terms_idf)
+
         # Encontrando los documentos mas relevantes
-        documentos = self.top_documents(new_query, number)
-        return documentos
+        documents_similarity = self.top_documents(new_query, number)
+        return documents_similarity
 
     def top_documents(self, query, number):
         """
@@ -104,8 +106,8 @@ class Corpus:
         documentos mas similares
         :param number: El numero de documentos que se debe retornar. Se
         retornan 10 documentos por defecto.
-        :return: Una lista conteniendo los 'number' documentos mas similares
-        a la consulta realizada.
+        :return: Una lista de tuplas (documento, similitud), conteniendo el
+        numero especificado de documentos mas similares con la consulta.
         """
 
         # Lista conteniendo las tuplas de documentos y su similaridad con la
@@ -117,12 +119,15 @@ class Corpus:
             similarity = self.calc_similarity(query, document)
             docs_sim.append((document, similarity))
 
+        # Eliminando los documentos donde la similitud sea nula
+        docs_sim = list(filter(lambda x: x[1] > 0.001, docs_sim))
+
         # Ordenando la lista por el valor de similaridad
-        docs_sim.sort(key=lambda x: x[1])
+        docs_sim.sort(key=lambda x: x[1], reverse=True)
 
         # Returnando los documentos mas relevantes ('number' documentos)
-        docs = [doc_tuple[0] for doc_tuple in docs_sim[:number]]
-        return docs
+        result = docs_sim[:number]
+        return result
 
     def calc_similarity(self, query, document):
         """
@@ -145,13 +150,19 @@ class Corpus:
 
         # Iterando por todos los terminos en el corpus
         for term in self.terms_freq.keys():
-            doc_weight = document.weight_vector[term]
-            query_weight = query.weight_vector[term]
+            # El valor por defecto del peso del termino es 0, en caso que este
+            # no se encuentre en la consulta o en el documento
+            doc_weight = document.weight_vector.get(term, 0)
+            query_weight = query.weight_vector.get(term, 0)
 
             # Sumando los pesos del termino actual
             sum_mult_weight += doc_weight * query_weight
             doc_sum_squares += doc_weight * doc_weight
             query_sum_squares += query_weight * query_weight
+
+        # Evitar dividir por cero
+        if doc_sum_squares == 0 or query_sum_squares == 0:
+            return 0
 
         similarity = sum_mult_weight / (sqrt(doc_sum_squares) * sqrt(query_sum_squares))
         return similarity

@@ -22,6 +22,10 @@ class Query:
         :param a: Variable de suavizado, para amortiguar la contribucion de la
         frecuencia del termino.
         """
+
+        # Guardar el texto de la consulta
+        self.text = text
+
         # Realiza la tokenizacion del texto de la consulta
         self.tokens = tokenize(text)
 
@@ -29,12 +33,11 @@ class Query:
         # verificacion de los terminos que contiene la consulta
         self.terms = set(self.tokens)
 
-        # Calcula la frecuencia de los terminos en la consulta y el valor de la
-        # frequencia maxima
+        # Calcula la frecuencia de los terminos en la consulta
         freq_dist = FreqDist(self.tokens)
+        # Guarda la frecuencia Maxima
         self.max_freq = freq_dist[freq_dist.max()]
-        # Crea diccionario para guardar la frequencia normalizada y amortiguada
-        # de los terminos
+        # Calcula la frequencia normalizada y amortiguada de los terminos
         self.norm_freq = self.__calc_norm_frequencies(freq_dist, a)
 
         # Calcula el vector de pesos de la consulta
@@ -52,6 +55,7 @@ class Query:
         :return: Un diccionario conteniendo la frecuencia normalizada para cada
         termino dentro de la consulta.
         """
+
         norm_frequencies = {}
         for term in self.terms:
             value = a + (1 - a) * (freq_dist[term] / self.max_freq)
@@ -68,10 +72,13 @@ class Query:
         :return: Un diccionario que contiene el peso de cada termino dentro del
         corpus con respecto a la consulta.
         """
+
         vector = {}
-        for term, idf_freq in corpus_idf:
-            # Valor de la frecuencia normalizada del termino
-            term_freq = self.norm_freq.get(term, 0)
+        # Itera por los terminos de la consulta y sus frequencias normalizadas
+        for term, term_freq in self.norm_freq.items():
+            # Valor de la frecuencia de ocurrencia del termino en el corpus
+            # 0 por defecto, en caso de que no este en el corpus
+            idf_freq = corpus_idf.get(term, 0)
             # Calcula el peso del termino en la consulta
             weight = term_freq * idf_freq
             vector[term] = weight
