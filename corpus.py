@@ -81,34 +81,20 @@ class Corpus:
 
         return idf_frequencies
 
-    def query_process(self, text, number=10):
+    def query_process(self, text, number=10, min_sim=0.001):
         """
         Procesa un query, y devuelve los 10 articulos (o 'number') mas
         relevantes.
         :param text: El texto del query.
-        :param number: El numero de documentos que se quiere recuperar
+        :param number: El numero de documentos que se quiere recuperar.
+        :param min_sim: La similitud minima para que un documento pueda ser
+        relevante.
         :return: Devuelve una lista conteniendo los 10 (or number) documentos
         mas relevantes con respecto al texto del query.
         """
 
         # Creando una instancia de query con el texto
-        new_query = Query(text, self.terms_idf)
-
-        # Encontrando los documentos mas relevantes
-        documents_similarity = self.top_documents(new_query, number)
-        return documents_similarity
-
-    def top_documents(self, query, number):
-        """
-        Encuentra los documentos que tengan la mayor similaridad con la
-        consulta.
-        :param query: Query - la consulta realizada para determinar los
-        documentos mas similares
-        :param number: El numero de documentos que se debe retornar. Se
-        retornan 10 documentos por defecto.
-        :return: Una lista de tuplas (documento, similitud), conteniendo el
-        numero especificado de documentos mas similares con la consulta.
-        """
+        query = Query(text, self.terms_idf)
 
         # Lista conteniendo las tuplas de documentos y su similaridad con la
         # consulta
@@ -119,8 +105,8 @@ class Corpus:
             similarity = self.calc_similarity(query, document)
             docs_sim.append((document, similarity))
 
-        # Eliminando los documentos donde la similitud sea nula
-        docs_sim = list(filter(lambda x: x[1] > 0.001, docs_sim))
+        # Eliminando los documentos donde la similitud sea muy baja
+        docs_sim = list(filter(lambda x: x[1] > min_sim, docs_sim))
 
         # Ordenando la lista por el valor de similaridad
         docs_sim.sort(key=lambda x: x[1], reverse=True)
