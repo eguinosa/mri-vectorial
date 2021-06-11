@@ -1,75 +1,50 @@
 # Gelin Eguinosa Rosique
 # C-511
 
-import json
-import time
-import sys
-from corpus import Corpus
+from dataset_search import dataset_search
+from dataset_test import dataset_test
 
 if __name__ == '__main__':
 
+    # Ubicaciones de las colecciones de prueba
+    cisi_docs_path = 'files/CISI.ALL.json'
+    cisi_answers_path = 'files/CISI.REL.json'
+    cisi_queries_path = 'files/CISI.QRY.json'
+    cran_docs_path = 'files/CRAN.ALL.json'
+    cran_answers_path = 'files/CRAN.REL.json'
+    cran_queries_path = 'files/CRAN.QRY.json'
+
     # Tipo de MRI y autor
-    print("Information Retrieval Project - Vector Space Model")
+    print("\nInformation Retrieval Project - Vector Space Model")
     print("Gelin Eguinosa Rosique C-511\n")
 
     # Colecciones de Prueba disponibles
     print("Available Datasets:")
-    print("  1. Cranfield - Cranfield University (enter '1/Cranfield' to load)")
-    print("  2. CISI - University of Glasgow (enter '2/CISI' to load)\n")
+    print("  1. CISI - University of Glasgow")
+    print("  2. Cranfield - Cranfield University\n")
+
+    # Las acciones que se pueden realizar en la consola
+    print("Options: ")
+    print("  1. To load the CISI corpus (enter '1/cisi')")
+    print("  2. To load the Cranfield corpus (enter '2/cranfield')")
+    print("  3. To evaluate the Model with the CISI dataset (enter '3/cisi test')")
+    print("  4. To evaluate the Model with the Cranfield dataset (enter '4/cranfield test')\n")
 
     # Pregunta cual coleccion de prueba se va a usar
-    dataset = input("Please, enter the dataset you would like to use: ")
+    dataset = input("Please, enter the option you would like to do: ")
     dataset = dataset.lower()
-    if dataset in {'1', 'cran', 'cranfield'}:
-        path_dataset = 'files/CRAN.ALL.json'
-        print("\nLoading Cranfield dataset...")
-    elif dataset in {'2', 'cisi'}:
-        path_dataset = 'files/CISI.ALL.json'
+    if dataset in {'1', 'cisi'}:
         print("\nLoading CISI dataset...")
+        dataset_search(cisi_docs_path)
+    elif dataset in {'2', 'cran', 'cranfield'}:
+        print("\nLoading Cranfield dataset...")
+        dataset_search(cran_docs_path)
+    elif dataset in {'3', 'cisi test'}:
+        print("\nEvaluating the Model using the CISI dataset.")
+        dataset_test(cisi_docs_path, cisi_queries_path, cisi_answers_path)
+    elif dataset in {'4', 'cran test', 'cranfield test'}:
+        print("\nEvaluating the Model using the Cranfield dataset.")
+        dataset_test(cran_docs_path, cran_queries_path, cran_answers_path)
     else:
         # No se especifico ninguna coleccion de prueba
-        print("No dataset specified.\nClosing Program.")
-        sys.exit()
-
-    # Open JSON file.
-    f = open(path_dataset)
-    # Get the JSON object as a dictionary.
-    data = json.load(f)
-    # Close file
-    f.close()
-
-    # Save Corpus
-    start_time = time.time()
-    corpus = Corpus(data)
-    finish_time = time.time()
-    interval = finish_time - start_time
-
-    print(f"{corpus.doc_count} documents loaded ({interval} seconds)")
-
-    while True:
-        print("\nPlease, enter your query (enter 'quit/q' to exit):")
-        query = input()
-
-        # Chequeando si el usuario quiere salir
-        if query.lower() in {'q', 'quit'}:
-            break
-
-        # Realiza la busqueda de los documentos similares en el corpus
-        start_time = time.time()
-        docs_sim = corpus.query_process(query)
-        finish_time = time.time()
-        interval = finish_time - start_time
-
-        # En caso que no se encuentren documentos relevantes
-        if not docs_sim:
-            print("\nNo relevant documents found. Try a different query.")
-            continue
-
-        # Imprime los resultados
-        print("\nThis are the results of your query:")
-        print(f"{len(docs_sim)} results ({interval} seconds)")
-        for document, similarity in docs_sim:
-            print(f"\n  Document {document.id}")
-            print(f"  Title: {document.title}")
-            print(f"  Author: {document.author}")
-            print(f"  Similarity: {similarity}")
+        print("No supported action specified.\nClosing Program.")
