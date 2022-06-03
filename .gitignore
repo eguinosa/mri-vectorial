@@ -1,8 +1,8 @@
+# Mac OS files:
+.DS_Store
+
 # .json files:
 # *.json
-
-# .txt files with notes for myself:
-*.txt
 
 # Created by .ignore support plugin (hsz.mobi)
 
